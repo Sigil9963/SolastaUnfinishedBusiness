@@ -74,7 +74,52 @@ internal static partial class SpellBuilders
 
         return spell;
     }
+    internal static SpellDefinition BuildTidalWave()
+    {
+        const string NAME = "TidalWave";
 
+        var spriteReference = Sprites.GetSprite(NAME, Resources.TidalWave, 128, 128);
+
+        var effectDescription = EffectDescriptionBuilder
+            .Create(WindWall)
+            .SetEffectAdvancement(EffectIncrementMethod.PerAdditionalSlotLevel, 1, 0, 1)
+            .SetSavingThrowData(
+                false,
+                AttributeDefinitions.Dexterity,
+                false,
+                EffectDifficultyClassComputation.SpellCastingFeature,
+                AttributeDefinitions.Wisdom,
+                12)
+            .SetDurationData(DurationType.Instantaneous)
+            .SetTargetFiltering(TargetFilteringMethod.AllCharacterAndGadgets)
+            //.LightCounterDispellEffect(true)
+            .SetParticleEffectParameters(WindWall)
+            .SetTargetingData(Side.All, RangeType.Distance, 24, TargetType.Line, 6, 2) // 6 long, 2 tall, is 2 wide possible?
+            .SetEffectForms(
+                EffectFormBuilder
+                    .Create()
+                    .SetMotionForm(MotionForm.MotionType.FallProne, 1)
+                    .HasSavingThrow(EffectSavingThrowType.Negates)
+                    .Build(),
+                EffectFormBuilder
+                    .Create()
+                    .SetDamageForm(DamageTypeBludgeoning, 4, DieType.D8)
+                    .HasSavingThrow(EffectSavingThrowType.HalfDamage)
+                    .Build())
+            .Build();
+
+        var spell = SpellDefinitionBuilder
+            .Create(NAME)
+            .SetGuiPresentation(Category.Spell, spriteReference)
+            .SetEffectDescription(effectDescription)
+            .SetCastingTime(ActivationTime.Action)
+            .SetSpellLevel(3)
+            .SetVocalSpellSameType(VocalSpellSemeType.Attack)
+            .SetSchoolOfMagic(SchoolOfMagicDefinitions.SchoolConjuration)
+            .AddToDB();
+
+        return spell;
+    }
     internal static SpellDefinition BuildWinterBreath()
     {
         const string NAME = "WinterBreath";

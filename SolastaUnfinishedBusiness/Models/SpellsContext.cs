@@ -220,6 +220,7 @@ internal static class SpellsContext
         RegisterSpell(BuildFindFamiliar(), 0, SpellListWizard);
         RegisterSpell(BuildGiftOfAlacrity(), 0, SpellListWizard);
         RegisterSpell(EnsnaringStrike, 0, SpellListRanger);
+        RegisterSpell(BuildIceKnife(), 0, SpellListDruid, SpellListSorcerer, SpellListWizard);
         RegisterSpell(BuildMagnifyGravity(), 0, SpellListWizard);
         RegisterSpell(BuildMule(), 0, SpellListWizard);
         RegisterSpell(BuildRadiantMotes(), 0, SpellListWizard, spellListInventorClass);
@@ -244,6 +245,7 @@ internal static class SpellsContext
         RegisterSpell(ElementalWeapon, 0, SpellListCleric, SpellListPaladin);
         RegisterSpell(BuildPulseWave(), 0, SpellListWizard);
         RegisterSpell(BuildSpiritShroud(), 0, SpellListCleric, SpellListPaladin, SpellListWarlock, SpellListWizard);
+        RegisterSpell(BuildTidalWave(), 0, SpellListDruid, SpellListSorcerer, SpellListWizard);
         RegisterSpell(BuildWinterBreath(), 0, SpellListDruid, SpellListSorcerer, SpellListWizard);
 
         // 4th level
@@ -251,6 +253,7 @@ internal static class SpellsContext
             spellListInventorClass);
         RegisterSpell(BuildGravitySinkhole(), 0, SpellListWizard);
         RegisterSpell(StaggeringSmite, 0, SpellListPaladin);
+        RegisterSpell(BuildWaterySphere(), 0, SpellListDruid, SpellListSorcerer, SpellListWizard);
 
         //5th level
         RegisterSpell(BanishingSmite, 0, SpellListPaladin);

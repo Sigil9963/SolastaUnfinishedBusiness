@@ -326,7 +326,55 @@ internal static partial class SpellBuilders
 
         return spell;
     }
+    internal static SpellDefinition BuildIceKnife()
+    {
+        const string NAME = "IceKnife";
 
+        var additionalDamageKnifed = FeatureDefinitionAdditionalDamageBuilder
+            .Create($"AdditionDamage{NAME}")
+            .SetSavingThrowData(
+                EffectDifficultyClassComputation.SpellCastingFeature,
+                EffectSavingThrowType.HalfDamage,
+                savingThrowAbility: AttributeDefinitions.Dexterity)
+            .SetDamageDice(DieType.D6, 2)
+            .SetSpecificDamageType(DamageTypeCold)
+            .AddToDB();
+
+        var conditionKnifed = ConditionDefinitionBuilder
+            .Create(ConditionCursed, "ConditionKnifed")
+            .SetOrUpdateGuiPresentation(Category.Condition)
+            .SetSpecialDuration(DurationType.Instantaneous)
+            .SetFeatures(additionalDamageKnifed)
+            //.radius
+            .AddToDB();
+
+        var spell = SpellDefinitionBuilder
+            .Create(NAME)
+            .SetGuiPresentation(Category.Spell, Sprites.GetSprite(NAME, Resources.AcidBolt, 128))
+            .SetEffectDescription(EffectDescriptionBuilder
+                .Create()
+                .SetTargetingData(Side.All, RangeType.RangeHit, 12, TargetType.Individuals, 2)
+                .SetEffectAdvancement(EffectIncrementMethod.PerAdditionalSlotLevel, additionalDicePerIncrement: 1)
+                .SetParticleEffectParameters(RayOfFrost.EffectDescription.EffectParticleParameters)
+                .AddEffectForms(
+                    EffectFormBuilder
+                        .Create()
+                        .SetDamageForm(DamageTypePiercing, 1, DieType.D10)
+                        .Build(),
+                   EffectFormBuilder
+                        .Create()
+                        .SetConditionForm(conditionKnifed, ConditionForm.ConditionOperation.Add)
+                        .Build())
+                .Build())
+            .SetCastingTime(ActivationTime.Action)
+            .SetSpellLevel(1)
+            .SetVerboseComponent(false)
+            .SetSomaticComponent(true)
+            .SetSchoolOfMagic(SchoolOfMagicDefinitions.SchoolConjuration)
+            .AddToDB();
+
+        return spell;
+    }
     internal static SpellDefinition BuildMule()
     {
         const string NAME = "Mule";

@@ -189,6 +189,89 @@ internal static partial class SpellBuilders
 
         return spell;
     }
+    internal static SpellDefinition BuildWaterySphere()
+    {
+        const string NAME = "WaterySphere";
+        const string ProxyWaterySphereName = $"Proxy{NAME}";
 
+        var sprite = Sprites.GetSprite(NAME, Resources.WaterySphere, 128);
+
+        var conditionRestrainedBySpellWaterySphere = ConditionDefinitionBuilder
+            .Create(ConditionDefinitions.ConditionRestrained, "ConditionGrappledRestrainedSpellWaterySphere")
+            .SetOrUpdateGuiPresentation(Category.Condition)
+            .SetSpecialDuration(DurationType.Round, 0)
+            .AddToDB();
+
+        var conditionFloatingSpellWaterySphere = ConditionDefinitionBuilder
+            .Create(ConditionDefinitions.ConditionLevitate, "ConditionFloatingSpellWaterySphere")
+            .SetOrUpdateGuiPresentation(Category.Condition)
+            .SetSpecialDuration(DurationType.Round, 0)
+            .AddToDB();
+
+        //var scale = new CustomScale(x: 0.5f, y: 0.5f, z: 0.5f);
+
+        //_ = EffectProxyDefinitionBuilder
+        var ProxyWaterySphere = EffectProxyDefinitionBuilder
+            .Create(EffectProxyDefinitions.ProxyMoonbeam, ProxyWaterySphereName) //EffectProxyDefinitions.ProxyGlobeOfInvulnerability also applies spell immunity for initial round
+            .SetGuiPresentation(NAME, Category.Spell, sprite)
+            .SetCanMove()
+            .SetIsEmptyPresentation(false)
+            .SetCanMoveOnCharacters()
+            .SetActionId(ActionDefinitions.Id.ProxyMoonBeam)
+            .SetPortrait(sprite)
+            .AddAdditionalFeatures(FeatureDefinitionMoveModes.MoveModeFly6)
+            .AddAdditionalFeatures(FeatureDefinitionMoveModes.MoveModeMove6)
+            //.SetCustomSubFeatures(scale)
+            .AddToDB();
+
+        var effectDescription = EffectDescriptionBuilder
+                .Create()
+                .SetParticleEffectParameters(IceStorm)
+                .SetTargetingData(Side.All, RangeType.Distance, 18, TargetType.Cube, 2, 2)
+                .SetDurationData(DurationType.Minute, 1)
+                .SetSavingThrowData(false, AttributeDefinitions.Strength, false, EffectDifficultyClassComputation.SpellCastingFeature)
+                .SetRecurrentEffect(RecurrentEffect.OnTurnEnd | RecurrentEffect.OnEnter | RecurrentEffect.OnActivation)
+                .SetTargetFiltering(TargetFilteringMethod.AllCharacterAndGadgets)
+                //.LightCounterDispellEffect(true)
+                .AddEffectForms(
+                    EffectFormBuilder
+                    .Create()
+                    .SetSummonEffectProxyForm(ProxyWaterySphere)
+                    .Build(),
+                EffectFormBuilder
+                    .Create()
+                    .SetConditionForm(conditionRestrainedBySpellWaterySphere, ConditionForm.ConditionOperation.Add)
+                    .HasSavingThrow(EffectSavingThrowType.Negates)
+                    .Build()
+                    /*EffectFormBuilder
+                        .Create()
+                        .SetConditionForm(conditionFloatingSpellWaterySphere, ConditionForm.ConditionOperation.Add)
+                        .HasSavingThrow(EffectSavingThrowType.Negates)
+                        .Build()
+                    EffectFormBuilder
+                        .Create()
+                        .SetMotionForm(MotionForm.MotionType.DragToOrigin) //Doesn't drag enemies with sphere
+                        .Build()*/
+                    )
+                .Build();
+
+        var spell = SpellDefinitionBuilder
+            //.Create(InsectPlague, NAME)
+            .Create(NAME)
+            .SetGuiPresentation(Category.Spell, sprite)
+            .SetEffectDescription(effectDescription)
+            .SetCastingTime(ActivationTime.Action)
+            .SetSchoolOfMagic(SchoolOfMagicDefinitions.SchoolConjuration)
+            .SetVerboseComponent(true)
+            .SetSomaticComponent(true)
+            .SetMaterialComponent(MaterialComponentType.Mundane)
+            .SetVocalSpellSameType(VocalSpellSemeType.Debuff)
+            .SetRequiresConcentration(true)
+            .SetSpellLevel(1)
+            //.SetCustomSubFeatures(PushesOrDragFromEffectPoint.Marker)
+            .AddToDB();
+
+        return spell;
+    }
     #endregion
 }
